@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#12052e">
 <title>For Dané</title>
 <meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%81%3C/text%3E%3C/svg%3E">
 <!-- The card WhatsApp shows under the link. The picture's address is where publish.sh puts it. -->
 <meta property="og:title" content="For Dané">
 <meta property="og:description" content="What I made this week. Tap the box to open it. Sound on ♪">
@@ -335,8 +336,11 @@
   }
   .playing .dock .disc { animation: spin 4s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .dock::after { content: "▶"; font-size: .7rem; opacity: .85; }
-  .playing .dock::after { content: "❚❚"; letter-spacing: -.1em; }
+  .dock::after {   /* play: a triangle; pause: two bars */
+    content: ""; width: 0; height: 0;
+    border-left: .55rem solid #fff; border-top: .35rem solid transparent; border-bottom: .35rem solid transparent;
+  }
+  .playing .dock::after { width: .55rem; height: .7rem; border: 0; border-left: .18rem solid #fff; border-right: .18rem solid #fff; }
 
   /* ---------- The ticket and its seal ---------- */
   .ticket {
@@ -652,7 +656,7 @@
           const on = e.data === YT.PlayerState.PLAYING;
           document.body.classList.toggle("playing", on);
           if (on && !played) { played = true; document.body.classList.add("played"); }
-          if (on) say("Now playing · Fireflies · Owl City");
+          if (on) say("Now playing · Fireflies");
           else if (played) say("Paused · Fireflies");
         },
         onError: e => { console.warn("YouTube player error", e.data); noSong(); },
