@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex, nofollow">
 <!-- The card WhatsApp shows under the link. The picture's address is where publish.sh puts it. -->
 <meta property="og:title" content="For Dané">
-<meta property="og:description" content="What I made this week. Tap the box to open it.">
+<meta property="og:description" content="What I made this week. Tap the box to open it. Sound on ♪">
 <meta property="og:image" content="https://divineweapons.github.io/for-dane/preview.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -300,33 +300,43 @@
   .trick span { color: var(--soft); font-size: .92rem; line-height: 1.45; }
 
   /* ---------- Her song ---------- */
-  .song { display: block; margin-top: 1.2rem; text-align: center; text-decoration: none; color: inherit; }
-  .deck { display: block; position: relative; width: 10rem; height: 10rem; margin: 0 auto; }
-  .record {
-    position: absolute; inset: 0; border-radius: 50%;
-    background: repeating-radial-gradient(circle, #101418 0 2px, #1b2228 2px 4px);
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, .08), 0 0 50px color-mix(in srgb, var(--glow) 45%, transparent), 0 20px 40px rgba(0, 0, 0, .5);
-    animation: spin 5s linear infinite;
+  /* The player sits in a glowing frame around it, never over it: YouTube asks that nothing covers its player,
+     and that the player is at least 200 px each way (4:3 at the card's narrowest, 360 px screens, is 273 × 205). */
+  .tv {
+    margin: 1.1rem 0 .3rem; padding: 5px; border-radius: 1rem;
+    background: linear-gradient(135deg, var(--w1), var(--w2), var(--w4));
+    box-shadow: 0 0 40px color-mix(in srgb, var(--glow) 40%, transparent), 0 18px 40px rgba(0, 0, 0, .45);
   }
-  .record::before {   /* light catching the grooves */
-    content: ""; position: absolute; inset: 0; border-radius: 50%;
-    background: conic-gradient(transparent 0 10%, rgba(255, 255, 255, .14) 14%, transparent 20% 60%, rgba(255, 255, 255, .1) 64%, transparent 70%);
-  }
-  .record::after {
-    content: ""; position: absolute; inset: 31%; border-radius: 50%;
-    background: radial-gradient(circle, #111 0 9%, transparent 10%), conic-gradient(var(--glow), var(--w2), var(--w4), var(--w1), var(--glow));
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .arm { position: absolute; right: -.6rem; top: -.4rem; width: .5rem; height: 5.6rem; border-radius: .3rem; background: linear-gradient(#f1f1f1, #9aa3ad); transform-origin: 50% .3rem; transform: rotate(24deg); box-shadow: 0 4px 10px rgba(0, 0, 0, .4); }
-  .arm::after { content: ""; position: absolute; bottom: -.3rem; left: -.25rem; width: 1rem; height: 1.2rem; border-radius: .2rem; background: #cfd5db; }
-  .eq { display: flex; justify-content: center; align-items: flex-end; gap: .28rem; height: 2.2rem; margin: 1.1rem 0 .5rem; }
-  .eq i { width: .38rem; height: 100%; border-radius: .2rem; transform-origin: bottom; background: linear-gradient(var(--w2), var(--w1)); animation: eq var(--t) ease-in-out infinite alternate; animation-delay: var(--d); }
+  .tv-screen { position: relative; aspect-ratio: 4 / 3; min-height: 200px; background: #000; }
+  .tv-screen iframe, #yt { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .now { display: flex; align-items: center; justify-content: center; gap: .7rem; margin-top: .6rem; font-size: .92rem; color: var(--soft); }
+  .eq { display: flex; align-items: flex-end; gap: .2rem; height: 1.2rem; }
+  .eq i { width: .26rem; height: 100%; border-radius: .2rem; transform-origin: bottom; transform: scaleY(.2); background: linear-gradient(var(--w2), var(--w1)); }
+  .playing .eq i { animation: eq var(--t) ease-in-out infinite alternate; animation-delay: var(--d); }
   @keyframes eq { 0% { transform: scaleY(.15); } 100% { transform: scaleY(1); } }
-  .song b { display: block; font-family: var(--serif); font-style: italic; font-size: 1.6rem; font-weight: 600; }
-  .play {
-    display: inline-block; margin-top: .35rem; padding: .45rem 1.2rem; border-radius: 2rem; font-size: .85rem; font-weight: 600; letter-spacing: .1em; color: #04170f;
-    background: linear-gradient(90deg, var(--w2), var(--w4)); box-shadow: 0 6px 20px color-mix(in srgb, var(--w2) 45%, transparent);
+  .watch {   /* only when YouTube's player can't load: offline, or the file opened from a phone's storage */
+    display: none; width: max-content; margin: .8rem auto 0; padding: .5rem 1.2rem; border-radius: 2rem; text-decoration: none;
+    font-size: .85rem; font-weight: 600; letter-spacing: .08em; color: #04170f; background: linear-gradient(90deg, var(--w2), var(--w4));
   }
+  .no-yt .watch { display: block; }
+  .no-yt .tv, .no-yt .eq { display: none; }
+
+  /* Once the song has played, a small button keeps it in her hands on every other card. */
+  .dock {
+    position: fixed; z-index: 3; top: max(1rem, env(safe-area-inset-top)); right: 1rem; display: none; align-items: center; gap: .55rem;
+    padding: .45rem .9rem .45rem .5rem; border-radius: 2rem; border: 0; cursor: pointer; font-size: .82rem; font-weight: 600; color: #fff;
+    background: rgba(255, 255, 255, .12); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
+  }
+  .played:not(.on-song) .dock { display: flex; }
+  .dock .disc {
+    width: 1.6rem; height: 1.6rem; border-radius: 50%;
+    background: radial-gradient(circle, #111 0 12%, transparent 13%), conic-gradient(var(--glow), var(--w2), var(--w4), var(--w1), var(--glow));
+  }
+  .playing .dock .disc { animation: spin 4s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .dock::after { content: "▶"; font-size: .7rem; opacity: .85; }
+  .playing .dock::after { content: "❚❚"; letter-spacing: -.1em; }
 
   /* ---------- The ticket and its seal ---------- */
   .ticket {
@@ -424,7 +434,17 @@
       <span class="base"></span>
       <span class="lid"><span class="bow"><i></i><i></i></span></span>
     </button>
-    <p class="muted">What I made this week.<br>Tap the box to open it.</p>
+    <p class="muted">What I made this week.<br>Tap the box to open it. Sound on ♪</p>
+  </section>
+
+  <!-- Her song opens the gift. YouTube's own player, shown whole and never covered, as YouTube's rules ask. -->
+  <section class="card" data-world="forest" id="song">
+    <h2 class="rainbow">Your song</h2>
+    <p>One night you sent me Fireflies, with just "Watch&nbsp;👀".</p>
+    <p>I kept it. The little lights in here are for you.</p>
+    <div class="tv"><div class="tv-screen"><div id="yt"></div></div></div>
+    <p class="now"><span class="eq" id="eq"></span><span id="songState">Fireflies · Owl City</span></p>
+    <a class="watch" href="https://www.youtube.com/watch?v=psuRGfAaju4" target="_blank" rel="noopener">▶ Play it on YouTube</a>
   </section>
 
   <section class="card" data-world="dawn">
@@ -529,18 +549,6 @@
     </div>
   </section>
 
-  <section class="card" data-world="forest">
-    <h2 class="rainbow">Your song</h2>
-    <p>One night you sent me Fireflies, with just "Watch&nbsp;👀".</p>
-    <p>I kept it. The little lights in here are for you.</p>
-    <a class="song" href="https://www.youtube.com/watch?v=psuRGfAaju4" target="_blank" rel="noopener">
-      <span class="deck"><span class="record"></span><span class="arm"></span></span>
-      <span class="eq" id="eq"></span>
-      <b>Fireflies</b>
-      <span class="play">▶ PLAY · OWL CITY</span>
-    </a>
-  </section>
-
   <section data-world="sunset">
     <div class="ticket" id="ticket">
       <small>Admit one · good for</small>
@@ -557,6 +565,8 @@
     <p class="sign rainbow">Joe</p>
   </section>
 </main>
+
+<button class="dock" id="dock" aria-label="Play or pause Fireflies"><span class="disc"></span>Fireflies</button>
 
 <nav id="nav">
   <button id="back" aria-label="Back">‹</button>
@@ -616,6 +626,44 @@
     b.style.setProperty("--d", -rand(0, 1) + "s");
     eq.appendChild(b);
   }
+
+  // Her song, through YouTube's own player on the first card. Opening the box starts it once the card is up.
+  // Where a phone won't let a page start it (iPhones can ask for a tap on the video itself), the line under the
+  // player asks for that tap. Where the player can't load at all, a link to the song on YouTube takes its place.
+  const song = document.getElementById("song");
+  const songState = document.getElementById("songState");
+  const dock = document.getElementById("dock");
+  let player = null, played = false;
+  const say = text => { songState.textContent = text; };
+  function noSong() { document.body.classList.add("no-yt"); say("Fireflies · Owl City"); }
+  function startSong() {
+    if (!player) return;   // onReady starts it, if the song card is still up
+    say("Starting your song…");
+    player.playVideo();
+    setTimeout(() => { if (!played) say("Tap the video to play it ♪"); }, 3000);
+  }
+  window.onYouTubeIframeAPIReady = () => {
+    new YT.Player("yt", {
+      videoId: "psuRGfAaju4",
+      playerVars: { playsinline: 1, rel: 0 },
+      events: {
+        onReady: e => { player = e.target; if (sections[at] === song && !played) startSong(); },
+        onStateChange: e => {
+          const on = e.data === YT.PlayerState.PLAYING;
+          document.body.classList.toggle("playing", on);
+          if (on && !played) { played = true; document.body.classList.add("played"); }
+          if (on) say("Now playing · Fireflies · Owl City");
+          else if (played) say("Paused · Fireflies");
+        },
+        onError: e => { console.warn("YouTube player error", e.data); noSong(); },
+      },
+    });
+  };
+  const api = document.createElement("script");
+  api.src = "https://www.youtube.com/iframe_api";
+  api.onerror = noSong;
+  document.head.appendChild(api);
+  dock.onclick = () => player.getPlayerState() === YT.PlayerState.PLAYING ? player.pauseVideo() : player.playVideo();
 
   // Hearts that rise slowly on the last card.
   const hearts = document.getElementById("hearts");
@@ -715,6 +763,9 @@
       s.classList.toggle("gone", n < at);
     });
     document.body.dataset.world = sections[at].dataset.world;
+    document.body.classList.toggle("on-song", sections[at] === song);
+    // YouTube asks that a player is on screen before a script starts it: wait for the card to rise.
+    if (sections[at] === song && !played) setTimeout(startSong, 700);
     nav.classList.toggle("on", at > 0);
     [...dots.children].forEach((d, n) => d.classList.toggle("here", n === at - 1));
     back.disabled = at <= 1;
